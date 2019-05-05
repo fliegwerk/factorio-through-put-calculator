@@ -18,7 +18,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,10 +74,12 @@ public class Calculator {
         if (!dataJSON.exists())
             throw new IOException("File: " + dataJSON.getPath() + " do not exist!");
 
+
         Calculator calculator = new Calculator();
 
         System.out.println(" -> parse dataJSON");
-        JSONObject data = new JSONObject(dataJSON.getPath());
+
+        JSONObject data = new JSONObject(Files.readString(dataJSON.toPath()));
 
         System.out.println(" -> parse item array");
         JSONArray items = data.getJSONArray("items");
@@ -186,6 +191,10 @@ public class Calculator {
         return consumables.addAll(addConsumables);
     }
 
+    public List<Consumable> getConsumables() {
+        return consumables;
+    }
+
     public boolean addAssemblingMachine(AssemblingMachine assemblingMachine) {
         if (!assemblingMachines.contains(assemblingMachine))
             return assemblingMachines.add(assemblingMachine);
@@ -195,5 +204,25 @@ public class Calculator {
 
     public boolean addAssemblingMachine(List<AssemblingMachine> addAssemblingMachines) {
         return assemblingMachines.addAll(addAssemblingMachines);
+    }
+
+    public List<AssemblingMachine> getAssemblingMachines()
+    {
+        return assemblingMachines;
+    }
+
+    public boolean addRecipe(Recipe recipe) {
+        if (!recipes.contains(recipe))
+            return recipes.add(recipe);
+        else
+            return false;
+    }
+
+    public boolean addRecipes(List<Recipe> addRecipes) {
+        return recipes.addAll(addRecipes);
+    }
+
+    public List<Recipe> getRecipes() {
+        return recipes;
     }
 }
