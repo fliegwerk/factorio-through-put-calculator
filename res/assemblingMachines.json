@@ -1,0 +1,11 @@
+{
+    "assembling-machines": [
+        {
+            "name": "assembling-machine-2",
+            "craftingspeed": 1.25,
+            "energyconsumption": 375.0,
+            "pollution": 2.0,
+            "moduleSlots": 4
+        }
+    ]
+}

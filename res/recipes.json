@@ -1,0 +1,43 @@
+{
+    "recipes": [
+        {
+            "name": "iron-gear-wheel",
+            "ingredients": [
+                {
+                    "ingredient": "iron-plate",
+                    "count": 2
+                }
+            ],
+            "results": [
+                {
+                    "result": "iron-gear-wheel",
+                    "count": 1
+                }
+            ],
+            "allowed-machines": [
+                {
+                    "machine": "assembling-machine-1",
+                    "machine": "assembling-machine-2",
+                    "machine": "assembling-machine-3"
+                }
+            ],
+            "craftingtime": 0.5,
+            "intermediate": true
+        },
+        {
+            "name": "copper-cable",
+            "ingredients": [
+                {
+                    "ingredient": "copper-plate",
+                    "count": 1
+                }
+            ],
+            "results": [
+                {
+                    "result": "copper-cable",
+                    "count": 2
+                }
+            ]
+        }
+    ]
+}

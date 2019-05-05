@@ -1,0 +1,55 @@
+{
+    "mod-name": "factorio-base-0.17.36",
+    "items": [
+        {
+            "name": "iron-plate",
+            "stacksize": 100
+        },
+        {
+            "name": "iron-gear-wheel",
+            "stacksize": 100
+        },
+        {
+            "name": "copper-plate",
+            "stacksize": 100
+        },
+        {
+            "name": "copper-cable",
+            "stacksize": 200
+        }
+    ],
+    "fuilds": [
+        {
+        "name": "water",
+        "cvalue": 1
+        },
+        {
+            "name": "steam",
+            "cvalue": 1
+        },
+        {
+            "name": "crude-oil",
+            "cvalue": 1
+        },
+        {
+            "name": "heavy-oil",
+            "cvalue": 1
+        },
+        {
+            "name": "light-oil",
+            "cvalue": 1
+        },
+        {
+            "name": "petroleum-gas",
+            "cvalue": 1
+        },
+        {
+            "name": "sulfuric-acid",
+            "cvalue": 1
+        },
+        {
+            "name": "lubricant",
+            "cvalue": 1
+        }
+    ]
+}

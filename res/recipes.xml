@@ -1,0 +1,33 @@
+<?xml version = "1.0"?>
+<class>
+    <recipe>
+        <ingredients>
+            <collection>
+                <consumable>Iron Plate</consumable>
+                <count>2</count>
+            </collection>
+        </ingredients>
+        <product>
+            <collection>
+                <consumable>Iron Gear</consumable>
+                <count>1</count>
+            </collection>
+        </product>
+        <craftingTime>0.5</craftingTime>
+        <intermediate>true</intermediate>
+    </recipe>
+    <recipe>
+        <ingredients>
+            <collection>
+                <consumable>Copper Plate</consumable>
+                <count>1</count>
+            </collection>
+        </ingredients>
+        <product>
+            <consumable>Copper Cable</consumable>
+            <count>2</count>
+        </product>
+        <craftingTime>0.5</craftingTime>
+        <intermediate>1</intermediate>
+    </recipe>
+</class>

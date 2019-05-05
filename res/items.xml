@@ -1,0 +1,15 @@
+<?xml version = "1.0"?>
+<class>
+    <consumable>
+        <name>Iron Plate</name>
+        <stacksize>100</stacksize>
+    </consumable>
+    <consumable>
+        <name>Copper Plate</name>
+        <stacksize>100</stacksize>
+    </consumable>
+    <consumable>
+        <name>Iron Gear</name>
+        <stacksize>200</stacksize>
+    </consumable>
+</class>
