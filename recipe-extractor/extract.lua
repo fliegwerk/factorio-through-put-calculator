@@ -49,7 +49,7 @@ files = {
 steampath = arg[1] or os.getenv("HOME")
 
 for i, f in ipairs(files) do
-    dofile("/home/jan/.steam/steam/steamapps/common/Factorio/data/base/prototypes/recipe/" .. f .. ".lua")
+    dofile(steampath .. "/.steam/steam/steamapps/common/Factorio/data/base/prototypes/recipe/" .. f .. ".lua")
 end
 
 output["recipes"] = recipes
