@@ -4,6 +4,7 @@ json = require "json"
 output = {}
 recipes = {}
 items = {}
+fluids = {}
 
 data = {}
 data["extend"] = function (data, t)
@@ -79,6 +80,23 @@ for i, f in ipairs(files) do
     dofile(data_path .. "/base/prototypes/item/" .. f .. ".lua")
 end
 
+files = {
+    "demo-fluid",
+    "fluid"}
+
+data["extend"] = function (data, t)
+    for n, item in ipairs(t) do
+        fl = {["name"] = item["name"],
+              ["cvalue"] = 1}
+        table.insert(fluids, fl)
+    end
+end
+
+for i, f in ipairs(files) do
+    dofile(data_path .. "/base/prototypes/fluid/" .. f .. ".lua")
+end
+
 output["recipes"] = recipes
 output["items"] = items
+output["fluids"] = fluids
 print(json.encode(output))
