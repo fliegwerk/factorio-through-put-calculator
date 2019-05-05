@@ -46,10 +46,10 @@ files = {
     "turret",
 }
 
-steampath = arg[1] or os.getenv("HOME")
+steampath = arg[1] or os.getenv("HOME") .. "/.steam/steam/steamapps/common/Factorio"
 
 for i, f in ipairs(files) do
-    dofile(steampath .. "/.steam/steam/steamapps/common/Factorio/data/base/prototypes/recipe/" .. f .. ".lua")
+    dofile(steampath .. "/data/base/prototypes/recipe/" .. f .. ".lua")
 end
 
 output["recipes"] = recipes
