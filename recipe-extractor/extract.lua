@@ -1,3 +1,4 @@
+#!/usr/bin/env lua
 json = require "json"
 
 output = {}
@@ -44,6 +45,8 @@ files = {
     "recipe",
     "turret",
 }
+
+steampath = arg[1] or os.getenv("HOME")
 
 for i, f in ipairs(files) do
     dofile("/home/jan/.steam/steam/steamapps/common/Factorio/data/base/prototypes/recipe/" .. f .. ".lua")
