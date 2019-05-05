@@ -1,14 +1,14 @@
-package de.rilu.factorio.throughputCalculator.lib.calculator;
+package de.fliegwerk.factorio.throughputCalculator.lib.calculator;
 
-import de.rilu.factorio.throughputCalculator.lib.consumable.Consumable;
-import de.rilu.factorio.throughputCalculator.lib.consumable.Fluid;
-import de.rilu.factorio.throughputCalculator.lib.consumable.Item;
-import de.rilu.factorio.throughputCalculator.lib.producer.AssemblingMachine;
-import de.rilu.factorio.throughputCalculator.lib.recipe.Recipe;
-import de.rilu.factorio.throughputCalculator.lib.calculator.saxHandlers.AssemblingMachineHandler;
-import de.rilu.factorio.throughputCalculator.lib.calculator.saxHandlers.FluidHandler;
-import de.rilu.factorio.throughputCalculator.lib.calculator.saxHandlers.ItemHandler;
-import de.rilu.factorio.throughputCalculator.lib.calculator.saxHandlers.RecipeHandler;
+import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Consumable;
+import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Fluid;
+import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Item;
+import de.fliegwerk.factorio.throughputCalculator.lib.producer.AssemblingMachine;
+import de.fliegwerk.factorio.throughputCalculator.lib.recipe.Recipe;
+import de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers.AssemblingMachineHandler;
+import de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers.FluidHandler;
+import de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers.ItemHandler;
+import de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers.RecipeHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

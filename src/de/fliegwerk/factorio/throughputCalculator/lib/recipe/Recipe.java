@@ -1,8 +1,8 @@
-package de.rilu.factorio.throughputCalculator.lib.recipe;
+package de.fliegwerk.factorio.throughputCalculator.lib.recipe;
 
-import de.rilu.factorio.throughputCalculator.lib.producer.AssemblingMachine;
-import de.rilu.factorio.throughputCalculator.lib.consumable.Consumable;
-import de.rilu.factorio.throughputCalculator.lib.consumable.ConsumableCount;
+import de.fliegwerk.factorio.throughputCalculator.lib.producer.AssemblingMachine;
+import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Consumable;
+import de.fliegwerk.factorio.throughputCalculator.lib.consumable.ConsumableCount;
 
 import java.util.List;
 import java.util.Objects;

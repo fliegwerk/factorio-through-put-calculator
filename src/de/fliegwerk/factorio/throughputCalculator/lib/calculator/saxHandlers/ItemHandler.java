@@ -1,7 +1,7 @@
-package de.rilu.factorio.throughputCalculator.lib.calculator.saxHandlers;
+package de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers;
 
-import de.rilu.factorio.throughputCalculator.lib.calculator.Calculator;
-import de.rilu.factorio.throughputCalculator.lib.consumable.Item;
+import de.fliegwerk.factorio.throughputCalculator.lib.calculator.Calculator;
+import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Item;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 

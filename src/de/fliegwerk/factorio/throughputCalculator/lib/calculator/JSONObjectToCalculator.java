@@ -1,4 +1,4 @@
-package de.rilu.factorio.throughputCalculator.lib.calculator;
+package de.fliegwerk.factorio.throughputCalculator.lib.calculator;
 
 import org.json.JSONObject;
 

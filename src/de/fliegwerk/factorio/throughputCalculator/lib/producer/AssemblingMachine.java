@@ -1,4 +1,4 @@
-package de.rilu.factorio.throughputCalculator.lib.producer;
+package de.fliegwerk.factorio.throughputCalculator.lib.producer;
 
 import java.util.Objects;
 

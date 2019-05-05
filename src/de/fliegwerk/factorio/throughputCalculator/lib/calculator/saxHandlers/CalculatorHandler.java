@@ -1,6 +1,6 @@
-package de.rilu.factorio.throughputCalculator.lib.calculator.saxHandlers;
+package de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers;
 
-import de.rilu.factorio.throughputCalculator.lib.calculator.Calculator;
+import de.fliegwerk.factorio.throughputCalculator.lib.calculator.Calculator;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class CalculatorHandler extends DefaultHandler {

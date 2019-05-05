@@ -1,6 +1,6 @@
-package de.rilu.factorio.throughputCalculator.lib;
+package de.fliegwerk.factorio.throughputCalculator.lib;
 
-import de.rilu.factorio.throughputCalculator.lib.calculator.Calculator;
+import de.fliegwerk.factorio.throughputCalculator.lib.calculator.Calculator;
 
 import java.io.File;
 import java.io.IOException;

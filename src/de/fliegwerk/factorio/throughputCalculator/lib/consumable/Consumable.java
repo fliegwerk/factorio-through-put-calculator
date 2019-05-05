@@ -1,4 +1,4 @@
-package de.rilu.factorio.throughputCalculator.lib.consumable;
+package de.fliegwerk.factorio.throughputCalculator.lib.consumable;
 
 import java.util.Objects;
 
