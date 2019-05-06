@@ -4,6 +4,7 @@ import de.fliegwerk.factorio.throughputCalculator.lib.calculator.Calculator;
 import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Consumable;
 import de.fliegwerk.factorio.throughputCalculator.lib.producer.AssemblingMachine;
 import de.fliegwerk.factorio.throughputCalculator.lib.recipe.Recipe;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +16,10 @@ public class Program {
         Calculator myCalculator;
 
         try {
-             myCalculator = Calculator.readJSONFile(dataJSON);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+             myCalculator = Calculator.newCalcFromJSONFile(dataJSON);
+        } catch (IOException | IllegalArgumentException exception) {
+            System.err.println("Can not create new Calculator!");
+            exception.printStackTrace();
             return;
         }
 
@@ -36,5 +38,7 @@ public class Program {
         for (Recipe recipe : myCalculator.getRecipes()) {
             System.out.println(recipe);
         }
+
+        myCalculator.buildDependencyTree();
     }
 }

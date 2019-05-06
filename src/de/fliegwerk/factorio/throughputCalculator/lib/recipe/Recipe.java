@@ -15,20 +15,23 @@ public class Recipe {
     public static final int MIN_NUMBER_OF_PRODUCERS = 1;
     public static final int MAX_NUMBER_OF_PRODUCERS = 1_000;
 
+    private final String name;
     private final List<ConsumableCount> ingredients;
     private final List<ConsumableCount> results;
     private final List<AssemblingMachine> allowedAssemblingMachines;
     private final double craftingTime;
     private final boolean intermediate;
 
-    public Recipe(List<ConsumableCount> ingredients, List<ConsumableCount> results, List<AssemblingMachine> allowedAssemblingMachines,
+    public Recipe(String name, List<ConsumableCount> ingredients, List<ConsumableCount> results, List<AssemblingMachine> allowedAssemblingMachines,
                   double craftingTime, boolean intermediate) {
+        if (name == null || name.trim().isEmpty())
+            throw new IllegalArgumentException("String name can not be null or empty!");
         if (ingredients == null || ingredients.isEmpty())
             throw new IllegalArgumentException("List ingredients can not be null or empty!");
         if (results == null || results.isEmpty())
             throw new IllegalArgumentException("List results can not be null or empty!");
         if (allowedAssemblingMachines == null || allowedAssemblingMachines.isEmpty())
-            throw new IllegalArgumentException("List allowed producers can not be null or empty!");
+            throw new IllegalArgumentException("List allowed assembling machines can not be null or empty!");
         if (ingredients.size() < MIN_NUMBER_OF_COLLECTIONS || ingredients.size() > MAX_NUMBER_OF_COLLECTIONS)
             throw new IllegalArgumentException("Size of list ingredients can not be less than " +
                     MIN_NUMBER_OF_COLLECTIONS + " or greater than " + MAX_NUMBER_OF_COLLECTIONS + '!');
@@ -42,6 +45,7 @@ public class Recipe {
             throw new IllegalArgumentException("Double craftingTime can not be less than " +
                     MIN_CRAFTING_TIME + " or greater than " + MAX_CRAFTING_TIME + '!');
 
+        this.name = name.trim();
         this.ingredients = ingredients;
         this.results = results;
         this.allowedAssemblingMachines = allowedAssemblingMachines;

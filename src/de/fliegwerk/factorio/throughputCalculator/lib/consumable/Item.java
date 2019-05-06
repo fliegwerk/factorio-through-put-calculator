@@ -12,7 +12,7 @@ public class Item extends Consumable {
     public Item(String name, int stackSize) {
         super(name);
         if (stackSize < MIN_STACKSIZE || stackSize > MAX_STACKSIZE)
-            throw new IllegalArgumentException("Stack size can not be less than " + MIN_STACKSIZE +
+            throw new IllegalArgumentException("Integer stack size can not be less than " + MIN_STACKSIZE +
                     " or greater than " + MAX_STACKSIZE + '!');
 
         this.stackSize = stackSize;

@@ -80,25 +80,25 @@
       "name": "iron-gear-wheel",
       "ingredients": [
         {
-          "ingredient": "iron-plate",
+          "name": "iron-plate",
           "count": 2
         }
       ],
       "results": [
         {
-          "result": "iron-gear-wheel",
+          "name": "iron-gear-wheel",
           "count": 1
         }
       ],
       "allowed-machines": [
         {
-          "machine": "assembling-machine-1"
+          "name": "assembling-machine-1"
         },
         {
-          "machine": "assembling-machine-2"
+          "name": "assembling-machine-2"
         },
         {
-          "machine": "assembling-machine-3"
+          "name": "assembling-machine-3"
         }
       ],
       "craftingtime": 0.5,
@@ -108,25 +108,25 @@
       "name": "copper-cable",
       "ingredients": [
         {
-          "ingredient": "copper-plate",
+          "name": "copper-plate",
           "count": 1
         }
       ],
       "results": [
         {
-          "result": "copper-cable",
+          "name": "copper-cable",
           "count": 2
         }
       ],
       "allowed-machines": [
         {
-          "machine": "assembling-machine-1"
+          "name": "assembling-machine-1"
         },
         {
-          "machine": "assembling-machine-2"
+          "name": "assembling-machine-2"
         },
         {
-          "machine": "assembling-machine-3"
+          "name": "assembling-machine-3"
         }
       ],
       "craftingtime": 0.5,

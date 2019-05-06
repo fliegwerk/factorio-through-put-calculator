@@ -1,6 +1,7 @@
 package de.fliegwerk.factorio.throughputCalculator.lib.calculator;
 
 import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Consumable;
+import de.fliegwerk.factorio.throughputCalculator.lib.consumable.ConsumableCount;
 import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Fluid;
 import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Item;
 import de.fliegwerk.factorio.throughputCalculator.lib.producer.AssemblingMachine;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,62 +71,81 @@ public class Calculator {
         return calculator;
     }
 
-    public static Calculator readJSONFile(File dataJSON)
-            throws IOException {
-        if (!dataJSON.exists())
-            throw new IOException("File: " + dataJSON.getPath() + " do not exist!");
-
-
+    public static Calculator newCalcFromJSONFile(File dataJSON)
+            throws IOException, IllegalArgumentException {
         Calculator calculator = new Calculator();
-
-        System.out.println(" -> parse dataJSON");
-
-        JSONObject data = new JSONObject(Files.readString(dataJSON.toPath()));
-
-        System.out.println(" -> parse item array");
-        JSONArray items = data.getJSONArray("items");
-
-        parseObjects(calculator, items, (calc, item) -> {
-            String name = item.getString("name");
-            int stackSize = item.getInt("stacksize");
-
-            calc.addConsumable(new Item(name, stackSize));
-        });
-
-        System.out.println(" -> parse fluid array");
-        JSONArray fluids = data.getJSONArray("fluids");
-
-        parseObjects(calculator, fluids, (calc, fluid) -> {
-            String name = fluid.getString("name");
-            double cValue = fluid.getDouble("cvalue");
-
-            calc.addConsumable(new Fluid(name, cValue));
-        });
-
-        System.out.println(" -> parse assembling machine array");
-        JSONArray assemblingMachines = data.getJSONArray("assembling-machines");
-
-        parseObjects(calculator, assemblingMachines, (calc, assemblingMachine) -> {
-            String name = assemblingMachine.getString("name");
-            double baseCraftingSpeed = assemblingMachine.getDouble("craftingspeed");
-            double baseEnergyConsumption = assemblingMachine.getDouble("energyconsumption");
-            double basePollution = assemblingMachine.getDouble("pollution");
-            int moduleSlots = assemblingMachine.getInt("moduleSlots");
-
-            calc.addAssemblingMachine(
-                    new AssemblingMachine(name, baseCraftingSpeed, baseEnergyConsumption, basePollution, moduleSlots)
-            );
-        });
-
-        System.out.println(" -> parse recipe array");
-        JSONArray recipes = data.getJSONArray("recipes");
-
-        parseObjects(calculator, recipes, (calc, recipe) -> {
-            String name = recipe.getString("name");
-
-        });
-
+        readJSONFile(calculator, dataJSON);
         return calculator;
+    }
+
+    public static void readJSONFile(Calculator calculator, File dataJSON)
+            throws IOException, IllegalArgumentException {
+
+        try {
+            System.out.println(" -> parse dataJSON");
+            JSONObject data = new JSONObject(Files.readString(dataJSON.toPath()));
+
+            System.out.println(" -> parse item array");
+            JSONArray items = data.getJSONArray("items");
+            parseObjects(calculator, items, (calc, item) -> {
+                String name = item.getString("name");
+                int stackSize = item.getInt("stacksize");
+
+                calc.addConsumable(new Item(name, stackSize));
+            });
+
+            System.out.println(" -> parse fluid array");
+            JSONArray fluids = data.getJSONArray("fluids");
+            parseObjects(calculator, fluids, (calc, fluid) -> {
+                String name = fluid.getString("name");
+                double cValue = fluid.getDouble("cvalue");
+
+                calc.addConsumable(new Fluid(name, cValue));
+            });
+
+            System.out.println(" -> parse assembling machine array");
+            JSONArray assemblingMachines = data.getJSONArray("assembling-machines");
+            parseObjects(calculator, assemblingMachines, (calc, assemblingMachine) -> {
+                String name = assemblingMachine.getString("name");
+                double baseCraftingSpeed = assemblingMachine.getDouble("craftingspeed");
+                double baseEnergyConsumption = assemblingMachine.getDouble("energyconsumption");
+                double basePollution = assemblingMachine.getDouble("pollution");
+                int moduleSlots = assemblingMachine.getInt("moduleSlots");
+
+                calc.addAssemblingMachine(
+                        new AssemblingMachine(name, baseCraftingSpeed, baseEnergyConsumption, basePollution, moduleSlots)
+                );
+            });
+
+            System.out.println(" -> parse recipe array");
+            JSONArray recipes = data.getJSONArray("recipes");
+
+            parseObjects(calculator, recipes, (calc, recipe) -> {
+                String name = recipe.getString("name");
+
+                List<ConsumableCount> ingredients = getConsumableCount(calc, recipe.getJSONArray("ingredients"));
+                List<ConsumableCount> results = getConsumableCount(calc, recipe.getJSONArray("results"));
+
+                double craftingTime = recipe.getDouble("craftingtime");
+                boolean intermediate = recipe.getBoolean("intermediate");
+
+                List<AssemblingMachine> assemblingMachinesList = new ArrayList<>();
+                JSONArray assemblingMachinesArray = recipe.getJSONArray("allowed-machines");
+                for (int i = 0; i < assemblingMachinesArray.length(); i++) {
+                    JSONObject object = assemblingMachinesArray.getJSONObject(i);
+                    AssemblingMachine machine = calc.findAssemblingMachine(object.getString("name"));
+                    if (machine != null)
+                        assemblingMachinesList.add(machine);
+                }
+
+                calc.addRecipe(
+                        new Recipe(name, ingredients, results, assemblingMachinesList,
+                                craftingTime, intermediate)
+                );
+            });
+        } catch (JSONException je) {
+            throw new IllegalArgumentException("Can not parse given JSON file!\n" + je.getMessage());
+        }
     }
 
     private static void parseObjects(Calculator calculator, JSONArray array, JSONObjectToCalculator function) {
@@ -134,12 +155,31 @@ public class Calculator {
                 try {
                     function.convertJSONObjectToCalculator(calculator, object);
 
-                } catch (JSONException je) {
-                    System.err.println("Can not parse object number " + i + '!');
-                    je.printStackTrace();
+                } catch (JSONException | IllegalArgumentException exception) {
+                    String name;
+                    try {
+                        name = object.getString("name");
+                    } catch (JSONException je) {
+                        name = Integer.toString(i);
+                    }
+                    System.err.println("Can not parse json object \"" + name + "\"!");
+                    exception.printStackTrace();
                 }
             }
         }
+    }
+
+    private static List<ConsumableCount> getConsumableCount(Calculator calculator, JSONArray array) {
+        List<ConsumableCount> list = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject item = array.getJSONObject(i);
+
+            Consumable consumable = calculator.findConsumable(item.getString("name"));
+            int count = item.getInt("count");
+
+            list.add(new ConsumableCount(consumable, count));
+        }
+        return list;
     }
 
     // private fields
@@ -176,6 +216,11 @@ public class Calculator {
 
     // methods
 
+    public void addJSONFile(File dataJSON)
+            throws IOException, IllegalArgumentException {
+        readJSONFile(this, dataJSON);
+    }
+
     public int getId() {
         return id;
     }
@@ -195,6 +240,14 @@ public class Calculator {
         return consumables;
     }
 
+    public Consumable findConsumable(String name) {
+        for (Consumable consumable : consumables) {
+            if (consumable.getName().equals(name))
+                return consumable;
+        }
+        return null;
+    }
+
     public boolean addAssemblingMachine(AssemblingMachine assemblingMachine) {
         if (!assemblingMachines.contains(assemblingMachine))
             return assemblingMachines.add(assemblingMachine);
@@ -206,9 +259,16 @@ public class Calculator {
         return assemblingMachines.addAll(addAssemblingMachines);
     }
 
-    public List<AssemblingMachine> getAssemblingMachines()
-    {
+    public List<AssemblingMachine> getAssemblingMachines() {
         return assemblingMachines;
+    }
+
+    public AssemblingMachine findAssemblingMachine(String name) {
+        for (AssemblingMachine assemblingMachine : assemblingMachines) {
+            if (assemblingMachine.getName().equals(name))
+                return assemblingMachine;
+        }
+        return null;
     }
 
     public boolean addRecipe(Recipe recipe) {
@@ -224,5 +284,9 @@ public class Calculator {
 
     public List<Recipe> getRecipes() {
         return recipes;
+    }
+
+    public void buildDependencyTree() {
+        // TODO: Dependency tree
     }
 }

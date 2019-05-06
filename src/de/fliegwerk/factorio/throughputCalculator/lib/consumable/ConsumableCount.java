@@ -9,17 +9,17 @@ public class ConsumableCount {
     private final Consumable consumable;
     private final int count;
 
-    public ConsumableCount(Item consumable, int count) {
+    public ConsumableCount(Consumable consumable, int count) {
         if (consumable == null)
-            throw new IllegalArgumentException("Item can not be null!");
+            throw new IllegalArgumentException("Item item can not be null!");
         if (count < MIN_COUNT || count > MAX_COUNT)
-            throw new IllegalArgumentException("Count can not be less than " + MIN_COUNT + " or greater than " + MAX_COUNT + '!');
+            throw new IllegalArgumentException("Integer count can not be less than " + MIN_COUNT + " or greater than " + MAX_COUNT + '!');
 
         this.consumable = consumable;
         this.count = count;
     }
 
-    public ConsumableCount(Item consumable) {
+    public ConsumableCount(Consumable consumable) {
         this(consumable, MIN_COUNT);
     }
 
