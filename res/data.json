@@ -16,6 +16,10 @@
     {
       "name": "copper-cable",
       "stacksize": 200
+    },
+    {
+      "name": "electronic-circuit",
+      "stacksize": 200
     }
   ],
   "fluids": [
@@ -52,9 +56,27 @@
       "cvalue": 1
     }
   ],
-  "assembling-machines": [
+  "machine-types": [
+    {
+      "name": "assembling-machine"
+    },
+    {
+      "name": "furnace"
+    },
+    {
+      "name": "refinery"
+    },
+    {
+      "name": "chemical-plant"
+    },
+    {
+      "name": "centrifuge"
+    }
+  ],
+  "machines": [
     {
       "name": "assembling-machine-1",
+      "machine-type": "assembling-machine",
       "craftingspeed": 0.5,
       "energyconsumption": 75.0,
       "pollution": 4.0,
@@ -62,6 +84,7 @@
     },
     {
       "name": "assembling-machine-2",
+      "machine-type": "assembling-machine",
       "craftingspeed": 0.75,
       "energyconsumption": 150.0,
       "pollution": 3.0,
@@ -69,6 +92,7 @@
     },
     {
       "name": "assembling-machine-3",
+      "machine-type": "assembling-machine",
       "craftingspeed": 1.25,
       "energyconsumption": 375.0,
       "pollution": 2.0,
@@ -90,15 +114,12 @@
           "count": 1
         }
       ],
-      "allowed-machines": [
+      "allowed-machine-types": [
         {
-          "name": "assembling-machine-1"
+          "name": "assembling-machine"
         },
         {
-          "name": "assembling-machine-2"
-        },
-        {
-          "name": "assembling-machine-3"
+          "name": "chemical-plant"
         }
       ],
       "craftingtime": 0.5,
@@ -118,15 +139,35 @@
           "count": 2
         }
       ],
-      "allowed-machines": [
+      "allowed-machine-types": [
         {
-          "name": "assembling-machine-1"
+          "name": "assembling-machine"
+        }
+      ],
+      "craftingtime": 0.5,
+      "intermediate": true
+    },
+    {
+      "name": "electronic-circuit",
+      "ingredients": [
+        {
+          "name": "copper-cable",
+          "count": 3
         },
         {
-          "name": "assembling-machine-2"
-        },
+          "name": "iron-plate",
+          "count": 1
+        }
+      ],
+      "results": [
         {
-          "name": "assembling-machine-3"
+          "name": "electronic-circuit",
+          "count": 1
+        }
+      ],
+      "allowed-machine-types": [
+        {
+          "name": "assembling-machine"
         }
       ],
       "craftingtime": 0.5,

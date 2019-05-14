@@ -4,7 +4,8 @@ import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Consumable;
 import de.fliegwerk.factorio.throughputCalculator.lib.consumable.ConsumableCount;
 import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Fluid;
 import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Item;
-import de.fliegwerk.factorio.throughputCalculator.lib.producer.AssemblingMachine;
+import de.fliegwerk.factorio.throughputCalculator.lib.machines.Machine;
+import de.fliegwerk.factorio.throughputCalculator.lib.machines.MachineType;
 import de.fliegwerk.factorio.throughputCalculator.lib.recipe.Recipe;
 import de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers.AssemblingMachineHandler;
 import de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers.FluidHandler;
@@ -19,13 +20,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
 public class Calculator {
 
@@ -103,17 +104,26 @@ public class Calculator {
                 calc.addConsumable(new Fluid(name, cValue));
             });
 
-            System.out.println(" -> parse assembling machine array");
-            JSONArray assemblingMachines = data.getJSONArray("assembling-machines");
-            parseObjects(calculator, assemblingMachines, (calc, assemblingMachine) -> {
-                String name = assemblingMachine.getString("name");
-                double baseCraftingSpeed = assemblingMachine.getDouble("craftingspeed");
-                double baseEnergyConsumption = assemblingMachine.getDouble("energyconsumption");
-                double basePollution = assemblingMachine.getDouble("pollution");
-                int moduleSlots = assemblingMachine.getInt("moduleSlots");
+            System.out.println(" -> parse machine type array");
+            JSONArray machineTypes = data.getJSONArray("machine-types");
+            parseObjects(calculator, machineTypes, (calc, machineType) -> {
+                String name = machineType.getString("name");
+                calc.addMachineType(new MachineType(name));
+            });
 
-                calc.addAssemblingMachine(
-                        new AssemblingMachine(name, baseCraftingSpeed, baseEnergyConsumption, basePollution, moduleSlots)
+            System.out.println(" -> parse machine array");
+            JSONArray assemblingMachines = data.getJSONArray("machines");
+            parseObjects(calculator, assemblingMachines, (calc, machine) -> {
+                String name = machine.getString("name");
+                MachineType machineType = calc.findMachineType(machine.getString("machine-type"));
+                double baseCraftingSpeed = machine.getDouble("craftingspeed");
+                double baseEnergyConsumption = machine.getDouble("energyconsumption");
+                double basePollution = machine.getDouble("pollution");
+                int moduleSlots = machine.getInt("moduleSlots");
+
+                calc.addMachine(
+                        new Machine(name, machineType,
+                                baseCraftingSpeed, baseEnergyConsumption, basePollution, moduleSlots)
                 );
             });
 
@@ -129,17 +139,11 @@ public class Calculator {
                 double craftingTime = recipe.getDouble("craftingtime");
                 boolean intermediate = recipe.getBoolean("intermediate");
 
-                List<AssemblingMachine> assemblingMachinesList = new ArrayList<>();
-                JSONArray assemblingMachinesArray = recipe.getJSONArray("allowed-machines");
-                for (int i = 0; i < assemblingMachinesArray.length(); i++) {
-                    JSONObject object = assemblingMachinesArray.getJSONObject(i);
-                    AssemblingMachine machine = calc.findAssemblingMachine(object.getString("name"));
-                    if (machine != null)
-                        assemblingMachinesList.add(machine);
-                }
+                List<MachineType> allowedMachineTypes =
+                        getAllowedMachineTypes(calculator, recipe.getJSONArray("allowed-machine-types"));
 
                 calc.addRecipe(
-                        new Recipe(name, ingredients, results, assemblingMachinesList,
+                        new Recipe(name, ingredients, results, allowedMachineTypes,
                                 craftingTime, intermediate)
                 );
             });
@@ -148,12 +152,12 @@ public class Calculator {
         }
     }
 
-    private static void parseObjects(Calculator calculator, JSONArray array, JSONObjectToCalculator function) {
+    private static void parseObjects(Calculator calculator, JSONArray array, BiConsumer<Calculator, JSONObject> function) {
         for (int i = 0; i < array.length(); i++) {
             JSONObject object = array.getJSONObject(i);
             if (!object.isEmpty()) {
                 try {
-                    function.convertJSONObjectToCalculator(calculator, object);
+                    function.accept(calculator, object);
 
                 } catch (JSONException | IllegalArgumentException exception) {
                     String name;
@@ -182,16 +186,51 @@ public class Calculator {
         return list;
     }
 
+    private static List<MachineType> getAllowedMachineTypes(Calculator calculator, JSONArray array) {
+        List<MachineType> list = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject object = array.getJSONObject(i);
+
+            MachineType machineType = calculator.findMachineType(object.getString("name"));
+            list.add(machineType);
+        }
+        return list;
+    }
+
+    private static Recipe findBestRecipe(List<Recipe> recipes, BiPredicate<Recipe, Recipe> rule) {
+        Recipe best = (recipes.isEmpty() ? null : recipes.get(0));
+
+        for (Recipe recipe : recipes) {
+            if (rule.test(recipe, best))
+                best = recipe;
+        }
+
+        return best;
+    }
+
+    private static BiPredicate<Recipe, Recipe> bestRecipeRule(Consumable consumable) {
+        return (recipe, best) -> {
+            int bestCount = best.getConsumableCount(consumable).getCount();
+            double bestTime = best.getCraftingTime();
+            int recipeCount = recipe.getConsumableCount(consumable).getCount();
+            double recipeTime = recipe.getCraftingTime();
+
+            return (bestCount / bestTime < recipeCount / recipeTime);
+        };
+    }
+
     // private fields
 
     private final int id;
     private List<Consumable> consumables;
-    private List<AssemblingMachine> assemblingMachines;
+    private List<MachineType> machineTypes;
+    private List<Machine> machines;
     private List<Recipe> recipes;
+    private Map<MachineType, Machine> assignedMachines;
 
     // constructors
 
-    public Calculator(List<Consumable> consumables, List<AssemblingMachine> assemblingMachines, List<Recipe> recipes) {
+    public Calculator(List<Consumable> consumables, List<MachineType> machineTypes, List<Machine> machines, List<Recipe> recipes) {
         this.id = nextId++;
 
         if (consumables != null)
@@ -199,10 +238,15 @@ public class Calculator {
         else
             this.consumables = new ArrayList<>();
 
-        if (assemblingMachines != null)
-            this.assemblingMachines = assemblingMachines;
+        if (machineTypes != null)
+            this.machineTypes = machineTypes;
         else
-            this.assemblingMachines = new ArrayList<>();
+            this.machineTypes = new ArrayList<>();
+
+        if (machines != null)
+            this.machines = machines;
+        else
+            this.machines = new ArrayList<>();
 
         if (recipes != null)
             this.recipes = recipes;
@@ -211,7 +255,7 @@ public class Calculator {
     }
 
     public Calculator() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
     // methods
@@ -248,27 +292,69 @@ public class Calculator {
         return null;
     }
 
-    public boolean addAssemblingMachine(AssemblingMachine assemblingMachine) {
-        if (!assemblingMachines.contains(assemblingMachine))
-            return assemblingMachines.add(assemblingMachine);
+    public boolean addMachineType(MachineType machineType) {
+        if (!machineTypes.contains(machineType))
+            return machineTypes.add(machineType);
         else
             return false;
     }
 
-    public boolean addAssemblingMachine(List<AssemblingMachine> addAssemblingMachines) {
-        return assemblingMachines.addAll(addAssemblingMachines);
+    public boolean addMachineType(List<MachineType> addMachineTypes) {
+        return machineTypes.addAll(addMachineTypes);
     }
 
-    public List<AssemblingMachine> getAssemblingMachines() {
-        return assemblingMachines;
+    public List<MachineType> getMachineTypes() {
+        return machineTypes;
     }
 
-    public AssemblingMachine findAssemblingMachine(String name) {
-        for (AssemblingMachine assemblingMachine : assemblingMachines) {
-            if (assemblingMachine.getName().equals(name))
-                return assemblingMachine;
+    public MachineType findMachineType(String name) {
+        for (MachineType machineType : machineTypes) {
+            if (machineType.getName().equals(name))
+                return machineType;
         }
         return null;
+    }
+
+    public boolean addMachine(Machine machine) {
+        if (!machines.contains(machine))
+            return machines.add(machine);
+        else
+            return false;
+    }
+
+    public boolean addMachine(List<Machine> addMachines) {
+        return machines.addAll(addMachines);
+    }
+
+    public List<Machine> getMachines() {
+        return machines;
+    }
+
+    public Machine findMachine(String name) {
+        for (Machine machine : machines) {
+            if (machine.getName().equals(name))
+                return machine;
+        }
+        return null;
+    }
+
+    public Machine findMachine(Recipe recipe) {
+        Machine best = assignedMachines.get(recipe.getAllowedMachineTypes().get(0));
+        for (MachineType machineType : recipe.getAllowedMachineTypes()) {
+            Machine possibleMachine = assignedMachines.get(machineType);
+            double craftingTime = recipe.getCraftingTime();
+            int ingredientCount = 0;
+            for (ConsumableCount count : recipe.getIngredients()) {
+                ingredientCount *= count.getCount();
+            }
+            int resultCount = 0;
+            for (ConsumableCount count : recipe.getResults()) {
+                resultCount *= count.getCount();
+            }
+            double speed = possibleMachine.getBaseCraftingSpeed();
+
+            if ()
+        }
     }
 
     public boolean addRecipe(Recipe recipe) {
@@ -286,7 +372,51 @@ public class Calculator {
         return recipes;
     }
 
-    public void buildDependencyTree() {
-        // TODO: Dependency tree
+    public List<Recipe> findRecipes(Consumable consumable, BiPredicate<Recipe, Consumable> rule) {
+        List<Recipe> possibleRecipes = new ArrayList<>();
+        for (Recipe recipe : recipes) {
+            if (rule.test(recipe, consumable))
+                possibleRecipes.add(recipe);
+        }
+        return possibleRecipes;
+    }
+
+    public void addDependencyRecipes() {
+        for (Consumable consumable : consumables) {
+            List<Recipe> recipes = findRecipes(consumable, Recipe::isResult);
+            Recipe best = findBestRecipe(recipes, bestRecipeRule(consumable));
+            consumable.setCraftingRecipe(best);
+            System.out.println("Found recipe for " + consumable.getName() + ": " + best);
+        }
+    }
+
+    /**
+     * Calculates a map with consumable double-value pairs how often this item is needed in 1 minute.
+     * @param startValues map which contains the start consumable double-value pairs for defined consumables.
+     *                    (for per Minute crafting)
+     * @return map with consumable double-value pairs
+     */
+    public Map<Consumable, Double> getValues(Map<Consumable, Double> startValues) {
+        if (startValues == null || startValues.isEmpty())
+            throw new IllegalArgumentException("Map startValues can not be null or empty!");
+
+        Map<Consumable, Double> startConsumables = Map.copyOf(startValues);
+        for (Map.Entry<Consumable, Double> set : startConsumables.entrySet()) {
+            Recipe recipe = set.getKey().getCraftingRecipe();
+
+            if (recipe != null) {
+                calculateResources(startValues, recipe, set.getValue());
+            }
+        }
+
+        return startValues;
+    }
+
+    private void calculateResources(Map<Consumable, Double> startValues, Recipe recipe, double count, ) {
+
+    }
+
+    private Machine findMachine(Recipe recipe) {
+
     }
 }

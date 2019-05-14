@@ -1,9 +1,12 @@
 package de.fliegwerk.factorio.throughputCalculator.lib.consumable;
 
+import de.fliegwerk.factorio.throughputCalculator.lib.recipe.Recipe;
+
 import java.util.Objects;
 
 public abstract class Consumable {
     private final String name;
+    private Recipe craftingRecipe = null;
 
     protected Consumable(String name) {
         if (name == null || name.trim().isEmpty())
@@ -14,6 +17,14 @@ public abstract class Consumable {
 
     public String getName() {
         return name;
+    }
+
+    public void setCraftingRecipe(Recipe craftingRecipe) {
+        this.craftingRecipe = craftingRecipe;
+    }
+
+    public Recipe getCraftingRecipe() {
+        return craftingRecipe;
     }
 
     @Override

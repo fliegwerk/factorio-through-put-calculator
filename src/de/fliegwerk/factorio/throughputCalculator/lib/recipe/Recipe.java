@@ -1,8 +1,9 @@
 package de.fliegwerk.factorio.throughputCalculator.lib.recipe;
 
-import de.fliegwerk.factorio.throughputCalculator.lib.producer.AssemblingMachine;
+import de.fliegwerk.factorio.throughputCalculator.lib.machines.Machine;
 import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Consumable;
 import de.fliegwerk.factorio.throughputCalculator.lib.consumable.ConsumableCount;
+import de.fliegwerk.factorio.throughputCalculator.lib.machines.MachineType;
 
 import java.util.List;
 import java.util.Objects;
@@ -18,11 +19,11 @@ public class Recipe {
     private final String name;
     private final List<ConsumableCount> ingredients;
     private final List<ConsumableCount> results;
-    private final List<AssemblingMachine> allowedAssemblingMachines;
+    private final List<MachineType> allowedMachineTypes;
     private final double craftingTime;
     private final boolean intermediate;
 
-    public Recipe(String name, List<ConsumableCount> ingredients, List<ConsumableCount> results, List<AssemblingMachine> allowedAssemblingMachines,
+    public Recipe(String name, List<ConsumableCount> ingredients, List<ConsumableCount> results, List<MachineType> allowedMachineTypes,
                   double craftingTime, boolean intermediate) {
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("String name can not be null or empty!");
@@ -30,7 +31,7 @@ public class Recipe {
             throw new IllegalArgumentException("List ingredients can not be null or empty!");
         if (results == null || results.isEmpty())
             throw new IllegalArgumentException("List results can not be null or empty!");
-        if (allowedAssemblingMachines == null || allowedAssemblingMachines.isEmpty())
+        if (allowedMachineTypes == null || allowedMachineTypes.isEmpty())
             throw new IllegalArgumentException("List allowed assembling machines can not be null or empty!");
         if (ingredients.size() < MIN_NUMBER_OF_COLLECTIONS || ingredients.size() > MAX_NUMBER_OF_COLLECTIONS)
             throw new IllegalArgumentException("Size of list ingredients can not be less than " +
@@ -38,7 +39,7 @@ public class Recipe {
         if (results.size() < MIN_NUMBER_OF_COLLECTIONS || results.size() > MAX_NUMBER_OF_COLLECTIONS)
             throw new IllegalArgumentException("Size of list results can not be less than " +
                     MIN_NUMBER_OF_COLLECTIONS + " or greater than " + MAX_NUMBER_OF_COLLECTIONS + '!');
-        if (allowedAssemblingMachines.size() < MIN_NUMBER_OF_PRODUCERS || allowedAssemblingMachines.size() > MAX_NUMBER_OF_PRODUCERS)
+        if (allowedMachineTypes.size() < MIN_NUMBER_OF_PRODUCERS || allowedMachineTypes.size() > MAX_NUMBER_OF_PRODUCERS)
             throw new IllegalArgumentException("Size of list allowed producers can not be less than " +
                     MIN_NUMBER_OF_PRODUCERS + " or greater than " + MAX_NUMBER_OF_PRODUCERS + '!');
         if (craftingTime < MIN_CRAFTING_TIME || craftingTime > MAX_CRAFTING_TIME)
@@ -48,9 +49,13 @@ public class Recipe {
         this.name = name.trim();
         this.ingredients = ingredients;
         this.results = results;
-        this.allowedAssemblingMachines = allowedAssemblingMachines;
+        this.allowedMachineTypes = allowedMachineTypes;
         this.craftingTime = craftingTime;
         this.intermediate = intermediate;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public boolean isIngredient(Consumable consumable) {
@@ -61,8 +66,12 @@ public class Recipe {
         return containsConsumable(results, consumable);
     }
 
-    public boolean isAllowedIn(AssemblingMachine assemblingMachine) {
-        return allowedAssemblingMachines.contains(assemblingMachine);
+    public boolean isAllowedIn(MachineType machineType) {
+        return allowedMachineTypes.contains(machineType);
+    }
+
+    public boolean isAllowedIn(Machine machine) {
+        return isAllowedIn(machine.getMachineType());
     }
 
     public List<ConsumableCount> getIngredients() {
@@ -73,8 +82,20 @@ public class Recipe {
         return results;
     }
 
-    public List<AssemblingMachine> getAllowedAssemblingMachines() {
-        return allowedAssemblingMachines;
+    public ConsumableCount getConsumableCount(Consumable consumable) {
+        for (ConsumableCount consumableCount : ingredients) {
+            if (consumableCount.getConsumable() == consumable)
+                return consumableCount;
+        }
+        for (ConsumableCount consumableCount : results) {
+            if (consumableCount.getConsumable() == consumable)
+                return consumableCount;
+        }
+        return null;
+    }
+
+    public List<MachineType> getAllowedMachineTypes() {
+        return allowedMachineTypes;
     }
 
     public double getCraftingTime() {
@@ -94,20 +115,21 @@ public class Recipe {
                 intermediate == recipe.intermediate &&
                 ingredients.equals(recipe.ingredients) &&
                 results.equals(recipe.results) &&
-                allowedAssemblingMachines.equals(recipe.allowedAssemblingMachines);
+                allowedMachineTypes.equals(recipe.allowedMachineTypes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ingredients, results, allowedAssemblingMachines, craftingTime, intermediate);
+        return Objects.hash(ingredients, results, allowedMachineTypes, craftingTime, intermediate);
     }
 
     @Override
     public String toString() {
         return "Recipe{" +
-                "ingredients=" + ingredients +
+                "name=" + name +
+                ", ingredients=" + ingredients +
                 ", results=" + results +
-                ", allowedAssemblingMachines=" + allowedAssemblingMachines +
+                ", allowedMachineTypes=" + allowedMachineTypes +
                 ", craftingTime=" + craftingTime +
                 ", intermediate=" + intermediate +
                 '}';
