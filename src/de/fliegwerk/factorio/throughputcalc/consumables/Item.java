@@ -2,6 +2,7 @@ package de.fliegwerk.factorio.throughputcalc.consumables;
 
 import de.fliegwerk.factorio.throughputcalc.CheckElements;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -30,9 +31,11 @@ public class Item extends Consumable {
      * @param name name of this recipe
      * @param stackSize maximum number of this item for 1 stack
      *
+     * @throws NullPointerException if string name is {@code null}
+     * @throws IllegalArgumentException if string name trimmed is empty
      * @throws IndexOutOfBoundsException if stack size is less than {@value MIN_STACK_SIZE}
      */
-    public Item(String name, int stackSize) {
+    public Item(@NotNull String name, int stackSize) {
         super(name);
         CheckElements.checkMin(stackSize, MIN_STACK_SIZE, "Integer stack size");
 

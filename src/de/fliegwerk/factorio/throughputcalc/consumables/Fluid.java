@@ -2,6 +2,7 @@ package de.fliegwerk.factorio.throughputcalc.consumables;
 
 import de.fliegwerk.factorio.throughputcalc.CheckElements;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -31,9 +32,11 @@ public class Fluid extends Consumable {
      * @param name name of this fluid
      * @param cValue <i>WIP</i>
      *
+     * @throws NullPointerException if string name is {@code null}
+     * @throws IllegalArgumentException if string name trimmed is empty
      * @throws IndexOutOfBoundsException if c value is less than {@value MIN_C_VALUE}
      */
-    public Fluid(String name, double cValue) {
+    public Fluid(@NotNull String name, double cValue) {
         super(name);
         CheckElements.checkMin(cValue, MIN_C_VALUE, "Double c value");
 
