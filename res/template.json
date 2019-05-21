@@ -1,0 +1,56 @@
+{
+  "mod-name": "factorio-base-0.17.36",
+  "items": [
+    {
+      "name": "example-item",
+      "stack-size": 100
+    }
+  ],
+  "fluids": [
+    {
+      "name": "example-fluid",
+      "c-value": 1.0
+    }
+  ],
+  "effect-machines": [
+    {
+      "name": "example-effect-machine",
+      "module-slots": 2,
+      "distribution-efficiency": 0.5
+    }
+  ],
+  "machines": [
+    {
+      "name": "example-crafting-machine",
+      "machine-type": "assembling-machine",
+      "module-slots": 4,
+      "crafting-speed": 1.25,
+      "energy-consumption": 375.0,
+      "pollution": 2.0
+    }
+  ],
+  "recipes": [
+    {
+      "name": "example-recipe",
+      "ingredients": [
+        {
+          "name": "example-item",
+          "count": 2
+        },
+        {
+          "name": "example-fluid",
+          "count": 1
+        }
+      ],
+      "results": [
+        {
+          "name": "example-item",
+          "count": 3
+        }
+      ],
+      "machine-type": "assembling-machine",
+      "crafting-time": 0.5,
+      "intermediate": true
+    }
+  ]
+}

@@ -1,14 +1,11 @@
-package de.fliegwerk.factorio.throughputCalculator.lib.machines;
+package de.fliegwerk.factorio.throughputcalc.machines;
 
 import java.util.Objects;
 
-public class MachineType {
+public abstract class MachinePrototype {
     private final String name;
 
-    public MachineType(String name) {
-        if (name == null || name.trim().isEmpty())
-            throw new IllegalArgumentException("String name can not be null or empty!");
-
+    public MachinePrototype(String name) {
         this.name = name.trim();
     }
 
@@ -19,8 +16,8 @@ public class MachineType {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MachineType)) return false;
-        MachineType that = (MachineType) o;
+        if (!(o instanceof MachinePrototype)) return false;
+        MachinePrototype that = (MachinePrototype) o;
         return name.equals(that.name);
     }
 
@@ -31,7 +28,7 @@ public class MachineType {
 
     @Override
     public String toString() {
-        return "MachineType{" +
+        return "MachinePrototype{" +
                 "name='" + name + '\'' +
                 '}';
     }

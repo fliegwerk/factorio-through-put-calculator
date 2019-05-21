@@ -1,20 +1,12 @@
-package de.fliegwerk.factorio.throughputCalculator.lib.consumable;
+package de.fliegwerk.factorio.throughputcalc.consumables;
 
 import java.util.Objects;
 
 public class Item extends Consumable {
-    public static final int MIN_STACKSIZE = 1;
-    public static final int DEFAULT_STACKSIZE = 50;
-    public static final int MAX_STACKSIZE = 1_000;
-
     private final int stackSize;
 
     public Item(String name, int stackSize) {
         super(name);
-        if (stackSize < MIN_STACKSIZE || stackSize > MAX_STACKSIZE)
-            throw new IllegalArgumentException("Integer stack size can not be less than " + MIN_STACKSIZE +
-                    " or greater than " + MAX_STACKSIZE + '!');
-
         this.stackSize = stackSize;
     }
 
@@ -25,7 +17,7 @@ public class Item extends Consumable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Item)) return false;
         if (!super.equals(o)) return false;
         Item item = (Item) o;
         return stackSize == item.stackSize;
@@ -39,8 +31,7 @@ public class Item extends Consumable {
     @Override
     public String toString() {
         return "Item{" +
-                super.toString() +
                 "stackSize=" + stackSize +
-                '}';
+                "} " + super.toString();
     }
 }
