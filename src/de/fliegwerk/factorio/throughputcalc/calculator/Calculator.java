@@ -1,31 +1,4 @@
-package de.fliegwerk.factorio.throughputCalculator.lib.calculator;
-
-import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Consumable;
-import de.fliegwerk.factorio.throughputCalculator.lib.consumable.ConsumableCount;
-import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Fluid;
-import de.fliegwerk.factorio.throughputCalculator.lib.consumable.Item;
-import de.fliegwerk.factorio.throughputCalculator.lib.machines.Machine;
-import de.fliegwerk.factorio.throughputCalculator.lib.machines.MachineType;
-import de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers.AssemblingMachineHandler;
-import de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers.FluidHandler;
-import de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers.ItemHandler;
-import de.fliegwerk.factorio.throughputCalculator.lib.calculator.saxHandlers.RecipeHandler;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
+package de.fliegwerk.factorio.throughputcalc.calculator;
 
 public class Calculator {
 //
