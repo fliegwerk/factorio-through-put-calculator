@@ -31,7 +31,6 @@
   ],
   "recipes": [
     {
-      "name": "example-recipe",
       "ingredients": [
         {
           "name": "example-item",
