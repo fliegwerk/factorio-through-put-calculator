@@ -1,7 +1,171 @@
 package de.fliegwerk.factorio.throughputcalc.calculator;
 
+import de.fliegwerk.factorio.throughputcalc.consumables.*;
+import de.fliegwerk.factorio.throughputcalc.machines.*;
+import de.fliegwerk.factorio.throughputcalc.recipes.Recipe;
+
+import org.jetbrains.annotations.NotNull;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.*;
+import java.util.function.Consumer;
+
 public class Calculator {
-//
+
+    private static int nextId = 0;
+
+    private final int id;
+    private List<Consumable> consumables;
+    private List<EffectMachinePrototype> effectMachinePrototypes;
+    private List<CraftingMachinePrototype> craftingMachinePrototypes;
+    private List<Recipe> recipes;
+
+    private EnumMap<MachineType, MachineConstructor> assignedMachines;
+
+    public Calculator() {
+        this.id = nextId++;
+        this.consumables = new ArrayList<>();
+        this.effectMachinePrototypes = new ArrayList<>();
+        this.craftingMachinePrototypes = new ArrayList<>();
+        this.recipes = new ArrayList<>();
+
+        this.assignedMachines = new EnumMap<>(MachineType.class);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public List<Consumable> getConsumables() {
+        return consumables;
+    }
+
+    public List<EffectMachinePrototype> getEffectMachinePrototypes() {
+        return effectMachinePrototypes;
+    }
+
+    public List<CraftingMachinePrototype> getCraftingMachinePrototypes() {
+        return craftingMachinePrototypes;
+    }
+
+    public List<Recipe> getRecipes() {
+        return recipes;
+    }
+
+    public EnumMap<MachineType, MachineConstructor> getAssignedMachines() {
+        return assignedMachines;
+    }
+
+    public Consumable findConsumable(String name) {
+        for (Consumable consumable : consumables) {
+            if (consumable.getName().equals(name))
+                return consumable;
+        }
+        // System.err.printf("Can not find consumable [\"%s\"]!%n", name);
+        return null;
+    }
+
+    public void readJSON(JSONObject root) {
+        Objects.requireNonNull(root, "JSONObject root can not be null!");
+
+        findJSONArray(root, "items", this::addItems);
+        findJSONArray(root, "fluids", this::addFluids);
+        findJSONArray(root, "effect-machines", this::addEffectMachinePrototypes);
+        findJSONArray(root, "crafting-machines", this::addCraftingMachinePrototypes);
+        findJSONArray(root, "recipes", this::addRecipes);
+    }
+
+    public void addItems(JSONArray array) {
+        parseJSONArray(array, (object) -> consumables.add(
+                new Item(object.getString("name"), object.getInt("stack-size"))
+        ));
+    }
+
+    public void addFluids(JSONArray array) {
+        parseJSONArray(array, (object) -> consumables.add(
+                new Fluid(object.getString("name"), object.getDouble("c-value"))
+        ));
+    }
+
+    public void addEffectMachinePrototypes(JSONArray array) {
+        parseJSONArray(array, (object) -> effectMachinePrototypes.add(
+                new EffectMachinePrototype(
+                        object.getString("name"),
+                        MachineType.effectMachine,
+                        object.getDouble("energy-consumption"),
+                        object.getInt("module-slots"),
+                        object.getDouble("distribution-efficiency")
+                )
+        ));
+    }
+
+    public void addCraftingMachinePrototypes(JSONArray array) {
+        parseJSONArray(array, (object) -> craftingMachinePrototypes.add(
+                new CraftingMachinePrototype(
+                        object.getString("name"),
+                        MachineType.getMachineType(object.getString("machine-type")),
+                        object.getDouble("energy-consumption"),
+                        object.getInt("module-slots"),
+                        object.getDouble("crafting-speed"),
+                        object.getDouble("productivity"),
+                        object.getDouble("pollution")
+                )
+        ));
+    }
+
+    public void addRecipes(JSONArray array) {
+        parseJSONArray(array, (object) -> recipes.add(
+                new Recipe(
+                    getRecipeConsumables(object.getJSONArray("ingredients")),
+                    getRecipeConsumables(object.getJSONArray("results")),
+                    MachineType.getMachineType(object.getString("machine-type")),
+                    object.getDouble("crafting-time"),
+                    object.getBoolean("intermediate")
+                )
+        ));
+    }
+
+    private Map<Consumable, Integer> getRecipeConsumables(JSONArray array) {
+        Map<Consumable, Integer> result = new HashMap<>(array.length());
+
+        for (int i = 0; i < array.length(); i++) {
+            Consumable consumable = findConsumable(array.getJSONObject(i).getString("name"));
+            Objects.requireNonNull(consumable, "Consumable can not be null!");
+            result.put(
+                    consumable,
+                    array.getJSONObject(i).getInt("count")
+            );
+        }
+
+        return result;
+    }
+
+
+
+    private void parseJSONArray(@NotNull JSONArray array, Consumer<JSONObject> function) {
+        for (int i = 0; i < array.length(); i++)
+            try {
+                function.accept(array.getJSONObject(i));
+
+            } catch (NullPointerException | IllegalArgumentException | IndexOutOfBoundsException |
+                    JSONException argException) {
+                System.err.println("Can not parse JSON object number " + i + '!');
+                argException.printStackTrace();
+            }
+    }
+
+    private void findJSONArray(@NotNull JSONObject root, String arrayName, Consumer<JSONArray> function) {
+        try {
+            function.accept(root.getJSONArray(arrayName));
+        } catch (JSONException je) {
+            System.err.printf("Can not find JSON array [\"%s\"]!%nMaybe missing something?%n", arrayName);
+        }
+    }
+
+    //
 //    // constants
 //
 //    private static int nextId = 0;

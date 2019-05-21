@@ -1,6 +1,7 @@
 package de.fliegwerk.factorio.throughputcalc.machines;
 
 import de.fliegwerk.factorio.throughputcalc.modules.Module;
+import org.jetbrains.annotations.Contract;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -62,6 +63,7 @@ public class MachineConstructor<T extends ModuleMachinePrototype> {
         return removed;
     }
 
+    @Contract(value = "null -> false", pure = true)
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

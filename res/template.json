@@ -16,15 +16,17 @@
     {
       "name": "example-effect-machine",
       "module-slots": 2,
+      "energy-consumption": 480.0,
       "distribution-efficiency": 0.5
     }
   ],
-  "machines": [
+  "crafting-machines": [
     {
       "name": "example-crafting-machine",
       "machine-type": "assembling-machine",
       "module-slots": 4,
       "crafting-speed": 1.25,
+      "productivity": 0.0,
       "energy-consumption": 375.0,
       "pollution": 2.0
     }
